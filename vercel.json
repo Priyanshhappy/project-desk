@@ -1,1 +1,1 @@
-{"framework":"nextjs","buildCommand":"npm run build","installCommand":"npm ci","outputDirectory":".next"}
+{"framework":"nextjs","crons":[{"path":"/api/cron/notifications","schedule":"30 3 * * *"}]}

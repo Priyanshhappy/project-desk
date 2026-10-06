@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./mountain-theme.css";
 
 export const metadata: Metadata = {
   title: "Project Desk",

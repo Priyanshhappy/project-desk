@@ -1,0 +1,17 @@
+import {strict as assert} from 'node:assert';
+import {detect,defaults,localDay} from '../lib/notification-rules.ts';
+import type {Row} from '../lib/model.ts';
+const now=new Date('2026-10-06T06:00:00Z');
+const record=(extra:Partial<Row>):Row=>({id:1,kind:'tasks',project:'2',title:'Task',created:'2026-10-01T00:00:00Z',updated:'2026-10-01T00:00:00Z',status:'In Progress',...extra});
+assert.equal(localDay(new Date('2026-10-05T19:00:00Z')),'2026-10-06');
+assert.equal(detect([record({due:'2026-10-06'})],defaults,now)[0].type,'task_due');
+assert.equal(detect([record({due:'2026-10-05'})],defaults,now)[0].type,'task_overdue');
+assert.equal(detect([record({due:'2026-10-05',status:'Completed'})],defaults,now).length,0);
+assert.equal(detect([record({due:'2026-10-05',sample:true})],defaults,now).length,0);
+assert.equal(detect([record({kind:'projects',delivery:'2026-10-01',revised:'2026-10-10'})],defaults,now).length,0);
+assert.equal(detect([record({kind:'milestones',plannedEnd:'2026-10-04'})],defaults,now)[0].type,'milestone_overdue');
+assert.equal(detect([record({kind:'requirements',approval:'Pending'})],defaults,now)[0].type,'pending');
+assert.equal(detect([record({kind:'issues',severity:'Critical'})],defaults,now)[0].type,'critical');
+assert.equal(detect([record({due:'2026-10-05'})],{...defaults,task_overdue:false},now).length,0);
+assert.notEqual(detect([record({due:'2026-10-05'})],defaults,now)[0].key,detect([record({due:'2026-10-04'})],defaults,now)[0].key);
+console.log('10 notification rule checks passed');
